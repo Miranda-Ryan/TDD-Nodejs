@@ -1,0 +1,55 @@
+{
+  "name": "tdd-express",
+  "version": "1.0.0",
+  "description": "Express course with TDD",
+  "main": "app.js",
+  "scripts": {
+    "start": "node app.js",
+    "dev": "nodemon app.js",
+    "test": "jest --watchAll",
+    "lint": "eslint .",
+    "lint:fix": "eslint . --fix"
+  },
+  "author": "Ryan Miranda",
+  "license": "ISC",
+  "dependencies": {
+    "express": "^4.17.3"
+  },
+  "devDependencies": {
+    "eslint": "^8.12.0",
+    "eslint-config-prettier": "^8.5.0",
+    "eslint-plugin-prettier": "^4.0.0",
+    "jest": "^27.5.1",
+    "prettier": "^2.6.1",
+    "supertest": "^6.2.2"
+  },
+  "eslintConfig": {
+    "parserOptions": {
+      "ecmaVersion": 6
+    },
+    "extends": [
+      "eslint:recommended",
+      "plugin:prettier/recommended"
+    ],
+    "plugins": [
+      "prettier"
+    ],
+    "env": {
+      "node": true,
+      "es6": true,
+      "jest": true
+    },
+    "rules": {
+      "semi": "warn",
+      "quotes": [
+        "warn",
+        "single"
+      ],
+      "eqeqeq": "warn"
+    }
+  },
+  "prettier": {
+    "singleQuote": true,
+    "printWidth": 120
+  }
+}
