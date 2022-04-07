@@ -1,0 +1,14 @@
+{
+  "USER_CREATED": "User created",
+  "USERNAME_NULL": "Username cannot be null",
+  "USERNAME_LENGTH": "Username must have min 4 characters and max 32 characters",
+  "EMAIL_NULL": "Email cannot be null",
+  "EMAIL_INVALID": "Email is not valid",
+  "EMAIL_IN_USE": "Email already in use",
+  "PASSWORD_NULL": "Password cannot be null",
+  "PASSWORD_LENGTH": "Password must be atleast 6 characters long",
+  "PASSWORD_PATTERN": "Password must have atleast 1 uppercase, 1 lowercase and 1 number",
+  "EMAIL_FAILURE": "Failed to send email",
+  "INVALID_TOKEN": "Token is invalid",
+  "ACCOUNT_ACTIVATED": "Account activated successfully"
+}
