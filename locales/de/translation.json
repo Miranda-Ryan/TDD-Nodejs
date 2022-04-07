@@ -1,0 +1,14 @@
+{
+  "USER_CREATED": "Benutzer erstellt",
+  "USERNAME_NULL": "Benutzername darf nicht null sein",
+  "USERNAME_LENGTH": "Der Benutzername muss mindestens 4 Zeichen und höchstens 32 Zeichen haben",
+  "EMAIL_NULL": "E-Mail darf nicht null sein",
+  "EMAIL_INVALID": "Email ist ungültig",
+  "EMAIL_IN_USE": "E-Mail wird bereits verwendet",
+  "PASSWORD_NULL": "Das Passwort darf nicht null sein",
+  "PASSWORD_LENGTH": "Das Passwort muss mindestens 6 Zeichen lang sein",
+  "PASSWORD_PATTERN": "Das Passwort muss mindestens 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Zahl enthalten",
+  "EMAIL_FAILURE": "E-Mail konnte nicht gesendet werden",
+  "INVALID_TOKEN": "Token ist ungültig",
+  "ACCOUNT_ACTIVATED": "Konto erfolgreich aktiviert"
+}
