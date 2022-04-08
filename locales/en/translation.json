@@ -10,5 +10,6 @@
   "PASSWORD_PATTERN": "Password must have atleast 1 uppercase, 1 lowercase and 1 number",
   "EMAIL_FAILURE": "Failed to send email",
   "INVALID_TOKEN": "Token is invalid",
-  "ACCOUNT_ACTIVATED": "Account activated successfully"
+  "ACCOUNT_ACTIVATED": "Account activated successfully",
+  "VALIDATION_FAILURE": "Validation failure"
 }

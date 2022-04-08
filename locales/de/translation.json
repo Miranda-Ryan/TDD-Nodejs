@@ -10,5 +10,6 @@
   "PASSWORD_PATTERN": "Das Passwort muss mindestens 1 Großbuchstaben, 1 Kleinbuchstaben und 1 Zahl enthalten",
   "EMAIL_FAILURE": "E-Mail konnte nicht gesendet werden",
   "INVALID_TOKEN": "Token ist ungültig",
-  "ACCOUNT_ACTIVATED": "Konto erfolgreich aktiviert"
+  "ACCOUNT_ACTIVATED": "Konto erfolgreich aktiviert",
+  "VALIDATION_FAILURE": "Validierungsfehler"
 }

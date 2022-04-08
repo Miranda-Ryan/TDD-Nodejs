@@ -3,8 +3,8 @@ const crypto = require('crypto');
 const User = require('../model/user');
 const EmailService = require('./email');
 const sequelize = require('../config/database');
-const EmailException = require('../exceptions/emailException');
-const InvalidTokenException = require('../exceptions/invalidTokenException');
+const EmailException = require('../errors/emailException');
+const InvalidTokenException = require('../errors/invalidTokenException');
 
 const generateToken = async (length) => {
   return crypto.randomBytes(length).toString('hex').substring(0, length);

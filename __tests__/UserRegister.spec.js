@@ -67,6 +67,7 @@ describe('User Registration', () => {
   const PASSWORD_LENGTH = 'Password must be atleast 6 characters long';
   const PASSWORD_PATTERN = 'Password must have atleast 1 uppercase, 1 lowercase and 1 number';
   const EMAIL_FAILURE = 'Failed to send email';
+  const VALIDATION_FAILURE = 'Validation failure';
 
   it('returns 200 OK when signup request is valid', async () => {
     const response = await postUser();
@@ -206,6 +207,12 @@ describe('User Registration', () => {
     const users = await User.findAll();
     expect(users.length).toBe(0);
   });
+
+  it('returns Validation failure message in error response body when registration fails', async () => {
+    const response = await postUser({ ...validUser, username: null });
+
+    expect(response.body.message).toBe(VALIDATION_FAILURE);
+  });
 });
 
 // =================== USER ACTIVATION ==========================================
@@ -319,6 +326,7 @@ describe('Internationalization: User Registration - German', () => {
   const EMAIL_FAILURE = 'E-Mail konnte nicht gesendet werden';
   const INVALID_TOKEN = 'Token ist ungültig';
   const ACCOUNT_ACTIVATED = 'Konto erfolgreich aktiviert';
+  const VALIDATION_FAILURE = 'Validierungsfehler';
 
   it('returns success message when signup request is valid', async () => {
     const response = await postUser(validUser, { language: 'de' });
@@ -393,5 +401,55 @@ describe('Internationalization: User Registration - German', () => {
       .set('accept-language', 'de')
       .send();
     expect(response.body.message).toBe(ACCOUNT_ACTIVATED);
+  });
+
+  it('returns Validation failure message in error response body when registration fails', async () => {
+    const response = await postUser({ ...validUser, username: null }, { language: 'de' });
+
+    expect(response.body.message).toBe(VALIDATION_FAILURE);
+  });
+});
+
+// =============================== ERROR MODEL ========================================================
+describe('Error Model', () => {
+  it('returns path, timestamp, message and validation errors in response when validation fails', async () => {
+    const response = await postUser({ ...validUser, username: null });
+
+    const { body } = response;
+    expect(Object.keys(body)).toEqual(['path', 'timestamp', 'message', 'validationErrors']);
+  });
+
+  it('returns path, timestamp and message for non-validation errors in response when request fails', async () => {
+    const token = 'invalid-token';
+    const response = await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+
+    const { body } = response;
+    expect(Object.keys(body)).toEqual(['path', 'timestamp', 'message']);
+  });
+
+  it('returns correct request path in error body when request fails', async () => {
+    const token = 'invalid-token';
+    const response = await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+
+    const { body } = response;
+    expect(body.path).toEqual('/api/1.0/users/token/' + token);
+  });
+
+  it('returns timestamp in milliseconds within 5 seconds of error in error body when request fails', async () => {
+    const time = new Date().getTime();
+    const timeInFiveSeconds = time + 5 * 1000;
+
+    const token = 'invalid-token';
+    const response = await request(app)
+      .post('/api/1.0/users/token/' + token)
+      .send();
+
+    const { body } = response;
+    expect(body.timestamp).toBeGreaterThan(time);
+    expect(body.timestamp).toBeLessThan(timeInFiveSeconds);
   });
 });
