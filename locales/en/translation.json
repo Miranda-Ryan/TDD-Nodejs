@@ -11,5 +11,7 @@
   "EMAIL_FAILURE": "Failed to send email",
   "INVALID_TOKEN": "Token is invalid",
   "ACCOUNT_ACTIVATED": "Account activated successfully",
-  "VALIDATION_FAILURE": "Validation failure"
+  "VALIDATION_FAILURE": "Validation failure",
+  "USER_NOT_FOUND": "User not found",
+  "INVALID_USER_ID": "Invalid user ID"
 }
