@@ -2,6 +2,8 @@ const express = require('express');
 const UserService = require('../service/user');
 const { check, validationResult } = require('express-validator');
 const ValidationException = require('../errors/validationException');
+const InvalidUserIdException = require('../errors/invalidUserIdException');
+const pagination = require('../middleware/pagination');
 
 const router = express.Router();
 
@@ -59,6 +61,33 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
     await UserService.activate(token);
 
     return res.send({ message: req.t('ACCOUNT_ACTIVATED') });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/1.0/users', pagination, async (req, res, next) => {
+  try {
+    const { page, size } = req.pagination;
+
+    const users = await UserService.getUsers(page, size);
+    res.send({ users });
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.get('/api/1.0/users/:id', async (req, res, next) => {
+  try {
+    const id = Number.parseInt(req.params.id);
+
+    const invalidId = Number.isNaN(id);
+    if (invalidId) {
+      throw new InvalidUserIdException();
+    }
+    const user = await UserService.getUser(id);
+
+    res.send(user);
   } catch (error) {
     next(error);
   }
