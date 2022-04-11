@@ -13,5 +13,7 @@
   "ACCOUNT_ACTIVATED": "Konto erfolgreich aktiviert",
   "VALIDATION_FAILURE": "Validierungsfehler",
   "USER_NOT_FOUND": "Benutzer wurde nicht gefunden",
-  "INVALID_USER_ID": "Ungültige Benutzer-Id"
+  "INVALID_USER_ID": "Ungültige Benutzer-Id",
+  "INCORRECT_CREDENTIALS": "Falsche Anmeldeinformationen",
+  "FORBIDDEN_ACCESS": "Sie sind nicht berechtigt, auf diese Daten zuzugreifen"
 }
