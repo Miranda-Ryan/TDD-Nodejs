@@ -13,5 +13,7 @@
   "ACCOUNT_ACTIVATED": "Account activated successfully",
   "VALIDATION_FAILURE": "Validation failure",
   "USER_NOT_FOUND": "User not found",
-  "INVALID_USER_ID": "Invalid user ID"
+  "INVALID_USER_ID": "Invalid user ID",
+  "INCORRECT_CREDENTIALS": "Incorrect credentials",
+  "FORBIDDEN_ACCESS": "You are not authorized to access this data"
 }
