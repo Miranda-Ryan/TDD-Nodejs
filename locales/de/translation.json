@@ -15,5 +15,5 @@
   "USER_NOT_FOUND": "Benutzer wurde nicht gefunden",
   "INVALID_USER_ID": "Ungültige Benutzer-Id",
   "INCORRECT_CREDENTIALS": "Falsche Anmeldeinformationen",
-  "FORBIDDEN_ACCESS": "Sie sind nicht berechtigt, auf diese Daten zuzugreifen"
+  "FORBIDDEN_ACCESS": "Sie sind nicht berechtigt, diese Aktion auszuführen"
 }

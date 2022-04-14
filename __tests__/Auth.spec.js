@@ -93,8 +93,8 @@ describe('Authentication', () => {
 
   it.each`
     language | message
-    ${'en'}  | ${'You are not authorized to access this data'}
-    ${'de'}  | ${'Sie sind nicht berechtigt, auf diese Daten zuzugreifen'}
+    ${'en'}  | ${'You are not authorized to perform this action'}
+    ${'de'}  | ${'Sie sind nicht berechtigt, diese Aktion auszuführen'}
   `('returns forbidden access message when logging in with an inactive account', async ({ language, message }) => {
     const inactive = true;
     await addUser(inactive);

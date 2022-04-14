@@ -2,6 +2,7 @@ const request = require('supertest');
 const app = require('../src/app');
 const User = require('../src/model/user');
 const sequelize = require('../src/config/database');
+const bcrypt = require('bcrypt');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
@@ -17,27 +18,34 @@ afterAll(async () => {
 
 const validUser = {
   username: 'user1',
-  email: 'user1@gmail.com',
-  password: 'P4ssword',
+  email: 'user1@xyz.com',
+  password: 'test1234',
 };
 
-const getUsers = async (page, pageSize) => {
+const getUsers = async (page, pageSize, options = {}) => {
   const queryOptions = {
     page,
     pageSize,
   };
+  const agent = request(app).get('/api/1.0/users').query(queryOptions);
 
-  return request(app).get('/api/1.0/users').query(queryOptions);
+  if (options.auth) {
+    const { email, password } = options.auth;
+    agent.auth(email, password);
+  }
+
+  return agent;
 };
 
 const addUsers = async (activeUsers = 10, inactiveUsers = 0) => {
   let i = 0;
+  const hash = await bcrypt.hash('test1234', 10);
   for (i; i < activeUsers; i++) {
-    await User.create({ username: `user${i}`, email: `user${i}@xyz.com`, password: 'test1234', inactive: false });
+    await User.create({ username: `user${i}`, email: `user${i}@xyz.com`, password: hash, inactive: false });
   }
 
   for (i; i < inactiveUsers; i++) {
-    await User.create({ username: `user${i}`, email: `user${i}@xyz.com`, password: 'test1234' });
+    await User.create({ username: `user${i}`, email: `user${i}@xyz.com`, password: hash });
   }
 };
 
@@ -180,6 +188,12 @@ describe('Listing Users', () => {
     expect(content.length).toBe(10);
     expect(page).toBe(1);
     expect(totalPages).toBe(2);
+  });
+
+  it('returns user page without logged in user when request has valid authorization', async () => {
+    await addUsers(11);
+    const response = await getUsers(null, null, { auth: { email: 'user1@xyz.com', password: 'test1234' } });
+    expect(response.body.users.totalPages).toBe(1);
   });
 
   it('returns 404 when user is not found', async () => {

@@ -3,7 +3,9 @@ const UserService = require('../service/user');
 const { check, validationResult } = require('express-validator');
 const ValidationException = require('../errors/validationException');
 const InvalidUserIdException = require('../errors/invalidUserIdException');
+const ForbiddenException = require('../errors/forbiddenException');
 const pagination = require('../middleware/pagination');
+const basicAuthentication = require('../middleware/basicAuthentication');
 
 const router = express.Router();
 
@@ -66,11 +68,12 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
   }
 });
 
-router.get('/api/1.0/users', pagination, async (req, res, next) => {
+router.get('/api/1.0/users', pagination, basicAuthentication, async (req, res, next) => {
   try {
+    const authenticatedUser = req.authenticatedUser;
     const { page, size } = req.pagination;
 
-    const users = await UserService.getUsers(page, size);
+    const users = await UserService.getUsers(page, size, authenticatedUser);
     res.send({ users });
   } catch (error) {
     next(error);
@@ -91,6 +94,17 @@ router.get('/api/1.0/users/:id', async (req, res, next) => {
   } catch (error) {
     next(error);
   }
+});
+
+router.put('/api/1.0/users/:id', basicAuthentication, async (req, res, next) => {
+  const authenticatedUser = req.authenticatedUser;
+
+  if (!authenticatedUser || authenticatedUser.id !== Number.parseInt(req.params.id)) {
+    return next(new ForbiddenException());
+  }
+
+  await UserService.updateUser(req.params.id, req.body);
+  return res.send();
 });
 
 module.exports = router;
