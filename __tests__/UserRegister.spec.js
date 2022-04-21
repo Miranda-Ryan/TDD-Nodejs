@@ -43,8 +43,8 @@ beforeAll(async () => {
   await sequelize.sync({ force: true });
 });
 
-beforeEach(() => {
-  return User.destroy({ truncate: true });
+beforeEach(async () => {
+  await User.destroy({ truncate: { cascade: true } });
 });
 
 afterEach(() => {

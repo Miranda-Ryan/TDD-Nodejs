@@ -3,13 +3,15 @@ const app = require('../src/app');
 const User = require('../src/model/user');
 const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');
+const Token = require('../src/model/token');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
 });
 
 beforeEach(async () => {
-  await User.destroy({ truncate: true });
+  await User.destroy({ truncate: { cascade: true } });
+  await Token.destroy({ truncate: true });
 });
 
 afterAll(async () => {
@@ -26,19 +28,26 @@ const addUser = async (user = { ...validUser }) => {
 };
 
 const putUser = async (id = 5, body = null, options = {}) => {
-  const agent = request(app).put('/api/1.0/users/' + id);
+  let agent = request(app);
+  let token;
 
+  // Get token
+  if (options.auth) {
+    const response = await agent.post('/api/1.0/auth').send(options.auth);
+    token = response.body.token;
+  }
+
+  agent = request(app).put('/api/1.0/users/' + id);
   if (options.language) {
     agent.set('accept-language', options.language);
   }
+  // Set token
+  if (token) {
+    agent.set('Authorization', `Bearer ${token}`);
+  }
 
-  if (options.auth) {
-    const { email, password } = options.auth;
-    // const merged = `${email}:${password}`;
-    // const base64 = Buffer.from(merged).toString('base64');
-    // agent.set('authorization', `Basic ${base64}`);
-
-    agent.auth(email, password);
+  if (options.token) {
+    agent.set('Authorization', `Bearer ${options.token}`);
   }
 
   return agent.send(body);
@@ -117,5 +126,10 @@ describe('User Update', () => {
 
     const inDBUser = await User.findOne({ where: { id: savedUser.id } });
     expect(inDBUser.username).toBe(validUpdate.username);
+  });
+
+  it('returns 403 when token is not valid', async () => {
+    const response = await putUser(5, null, { token: '123' });
+    expect(response.status).toBe(403);
   });
 });

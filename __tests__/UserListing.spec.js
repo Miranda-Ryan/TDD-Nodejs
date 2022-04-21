@@ -3,13 +3,15 @@ const app = require('../src/app');
 const User = require('../src/model/user');
 const sequelize = require('../src/config/database');
 const bcrypt = require('bcrypt');
+const Token = require('../src/model/token');
 
 beforeAll(async () => {
   await sequelize.sync({ force: true });
 });
 
 beforeEach(async () => {
-  await User.destroy({ truncate: true });
+  await User.destroy({ truncate: { cascade: true } });
+  await Token.destroy({ truncate: true });
 });
 
 afterAll(async () => {
@@ -27,14 +29,27 @@ const getUsers = async (page, pageSize, options = {}) => {
     page,
     pageSize,
   };
-  const agent = request(app).get('/api/1.0/users').query(queryOptions);
 
+  let agent = request(app);
+  let token;
+
+  // Get token
   if (options.auth) {
-    const { email, password } = options.auth;
-    agent.auth(email, password);
+    const response = await agent.post('/api/1.0/auth').send(options.auth);
+    token = response.body.token;
   }
 
-  return agent;
+  agent = request(app).get('/api/1.0/users/');
+  if (options.language) {
+    agent.set('accept-language', options.language);
+  }
+
+  // Set token
+  if (token) {
+    agent.set('Authorization', `Bearer ${token}`);
+  }
+
+  return agent.send().query(queryOptions);
 };
 
 const addUsers = async (activeUsers = 10, inactiveUsers = 0) => {

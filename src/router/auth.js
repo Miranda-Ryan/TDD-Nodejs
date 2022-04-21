@@ -4,6 +4,7 @@ const { check, validationResult } = require('express-validator');
 const AuthenticationException = require('../errors/authenticationException');
 const ForbiddenException = require('../errors/forbiddenException');
 const bcrypt = require('bcrypt');
+const TokenService = require('../service/token');
 
 const router = express.Router();
 
@@ -29,7 +30,18 @@ router.post('/api/1.0/auth', check('email').isEmail().bail(), check('password').
     return next(new ForbiddenException());
   }
 
-  res.send({ id: user.id, username: user.username });
+  const token = await TokenService.createToken(user);
+
+  res.send({ id: user.id, username: user.username, token });
+});
+
+router.post('/api/1.0/logout', async (req, res, next) => {
+  const authorization = req.headers.authorization;
+  if (authorization) {
+    const token = authorization.substring(7);
+    await TokenService.deleteToken(token);
+  }
+  res.send();
 });
 
 module.exports = router;
