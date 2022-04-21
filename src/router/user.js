@@ -5,7 +5,6 @@ const ValidationException = require('../errors/validationException');
 const InvalidUserIdException = require('../errors/invalidUserIdException');
 const ForbiddenException = require('../errors/forbiddenException');
 const pagination = require('../middleware/pagination');
-const basicAuthentication = require('../middleware/basicAuthentication');
 
 const router = express.Router();
 
@@ -68,7 +67,7 @@ router.post('/api/1.0/users/token/:token', async (req, res, next) => {
   }
 });
 
-router.get('/api/1.0/users', pagination, basicAuthentication, async (req, res, next) => {
+router.get('/api/1.0/users', pagination, async (req, res, next) => {
   try {
     const authenticatedUser = req.authenticatedUser;
     const { page, size } = req.pagination;
@@ -96,15 +95,34 @@ router.get('/api/1.0/users/:id', async (req, res, next) => {
   }
 });
 
-router.put('/api/1.0/users/:id', basicAuthentication, async (req, res, next) => {
+router.put('/api/1.0/users/:id', async (req, res, next) => {
   const authenticatedUser = req.authenticatedUser;
 
   if (!authenticatedUser || authenticatedUser.id !== Number.parseInt(req.params.id)) {
     return next(new ForbiddenException());
   }
 
-  await UserService.updateUser(req.params.id, req.body);
-  return res.send();
+  try {
+    await UserService.updateUser(req.params.id, req.body);
+    return res.send();
+  } catch (error) {
+    next(error);
+  }
+});
+
+router.delete('/api/1.0/users/:id', async (req, res, next) => {
+  const authenticatedUser = req.authenticatedUser;
+
+  if (!authenticatedUser || authenticatedUser.id !== Number.parseInt(req.params.id)) {
+    return next(new ForbiddenException());
+  }
+
+  try {
+    await UserService.deleteUser(authenticatedUser.id);
+    res.send();
+  } catch (error) {
+    next(error);
+  }
 });
 
 module.exports = router;
