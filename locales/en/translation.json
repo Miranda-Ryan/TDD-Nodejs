@@ -15,5 +15,8 @@
   "USER_NOT_FOUND": "User not found",
   "INVALID_USER_ID": "Invalid user ID",
   "INCORRECT_CREDENTIALS": "Incorrect credentials",
-  "FORBIDDEN_ACCESS": "You are not authorized to perform this action"
+  "FORBIDDEN_ACCESS": "You are not authorized to perform this action",
+  "EMAIL_NOT_FOUND": "Email not found",
+  "PASSWORD_RESET_REQUEST_SUCCESS": "Check your email for steps on resetting your password",
+  "UNAUTHORIZED_PASSWORD_RESET": "You are not authorized to update this password"
 }

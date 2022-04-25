@@ -1,12 +1,14 @@
 const bcrypt = require('bcrypt');
 const User = require('../model/user');
 const EmailService = require('./email');
-const TokenService = require('./token');
 const sequelize = require('../config/database');
 const EmailException = require('../errors/emailException');
 const InvalidTokenException = require('../errors/invalidTokenException');
-const UserNotFoundException = require('../errors/userNotFoundException');
+const NotFoundException = require('../errors/notFoundException');
+const ForbiddenException = require('../errors/forbiddenException');
 const Sequelize = require('sequelize');
+const TokenService = require('./token');
+
 const { randomString } = require('../shared/generator');
 
 const saveUser = async (body) => {
@@ -64,7 +66,7 @@ const getUsers = async (page, pageSize, authenticatedUser) => {
 const getUser = async (id) => {
   const user = await User.findOne({ where: { id, inactive: false }, attributes: ['id', 'username', 'email'] });
   if (!user) {
-    throw new UserNotFoundException();
+    throw new NotFoundException('USER_NOT_FOUND');
   }
 
   return user;
@@ -80,6 +82,42 @@ const deleteUser = async (id) => {
   await User.destroy({ where: { id } });
 };
 
+const passwordResetRequest = async (email) => {
+  const user = await findByEmail(email);
+  if (!user) {
+    throw new NotFoundException('EMAIL_NOT_FOUND');
+  }
+
+  const passwordResetToken = await randomString(16);
+  user.passwordResetToken = passwordResetToken;
+  await user.save();
+
+  try {
+    await EmailService.sendPasswordResetToken(user.email, user.passwordResetToken);
+  } catch (error) {
+    throw new EmailException();
+  }
+};
+
+const validatePasswordResetToken = async (token) => {
+  const user = await User.findOne({ where: { passwordResetToken: token } });
+  if (!user) {
+    throw new ForbiddenException('UNAUTHORIZED_PASSWORD_RESET');
+  }
+
+  return user;
+};
+
+const updatePassword = async (passwordResetToken, password) => {
+  const user = await User.findOne({ where: { passwordResetToken } });
+  const hash = await bcrypt.hash(password, 10);
+  user.password = hash;
+  user.passwordResetToken = null;
+  await user.save();
+
+  await TokenService.clearTokens(user.id);
+};
+
 module.exports = {
   saveUser,
   activate,
@@ -88,4 +126,7 @@ module.exports = {
   getUser,
   updateUser,
   deleteUser,
+  passwordResetRequest,
+  validatePasswordResetToken,
+  updatePassword,
 };

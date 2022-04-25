@@ -1,4 +1,4 @@
-module.exports = function ForbiddenException() {
+module.exports = function ForbiddenException(message) {
   this.status = 403;
-  this.message = 'FORBIDDEN_ACCESS';
+  this.message = message || 'FORBIDDEN_ACCESS';
 };

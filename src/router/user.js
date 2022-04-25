@@ -125,4 +125,54 @@ router.delete('/api/1.0/users/:id', async (req, res, next) => {
   }
 });
 
+router.post(
+  '/api/1.0/user/password-reset',
+  check('email').notEmpty().withMessage('EMAIL_NULL').bail().isEmail().withMessage('EMAIL_INVALID').bail(),
+  async (req, res, next) => {
+    const errors = validationResult(req);
+
+    if (!errors.isEmpty()) {
+      return next(new ValidationException(errors.array()));
+    }
+
+    const { email } = req.body;
+
+    try {
+      await UserService.passwordResetRequest(email);
+      res.send({ message: req.t('PASSWORD_RESET_REQUEST_SUCCESS') });
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
+router.put(
+  '/api/1.0/user/password',
+  check('password')
+    .notEmpty()
+    .withMessage('PASSWORD_NULL')
+    .bail()
+    .isLength({ min: 6 })
+    .withMessage('PASSWORD_LENGTH')
+    .bail()
+    .matches(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).*$/)
+    .withMessage('PASSWORD_PATTERN'),
+  async (req, res, next) => {
+    try {
+      const user = await UserService.validatePasswordResetToken(req.body.passwordResetToken);
+      const errors = validationResult(req);
+      if (!errors.isEmpty() && user) {
+        return next(new ValidationException(errors.array()));
+      }
+
+      const { passwordResetToken, password } = req.body;
+      await UserService.updatePassword(passwordResetToken, password);
+
+      res.send();
+    } catch (error) {
+      next(error);
+    }
+  }
+);
+
 module.exports = router;
