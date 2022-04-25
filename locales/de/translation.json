@@ -15,5 +15,8 @@
   "USER_NOT_FOUND": "Benutzer wurde nicht gefunden",
   "INVALID_USER_ID": "Ungültige Benutzer-Id",
   "INCORRECT_CREDENTIALS": "Falsche Anmeldeinformationen",
-  "FORBIDDEN_ACCESS": "Sie sind nicht berechtigt, diese Aktion auszuführen"
+  "FORBIDDEN_ACCESS": "Sie sind nicht berechtigt, diese Aktion auszuführen",
+  "EMAIL_NOT_FOUND": "Email wurde nicht gefunden",
+  "PASSWORD_RESET_REQUEST_SUCCESS": "Sehen Sie in Ihren E-Mails nach, wie Sie Ihr Passwort zurücksetzen können",
+  "UNAUTHORIZED_PASSWORD_RESET": "Sie sind nicht berechtigt, dieses Passwort zu aktualisieren"
 }
