@@ -5,6 +5,7 @@ const ValidationException = require('../errors/validationException');
 const InvalidUserIdException = require('../errors/invalidUserIdException');
 const ForbiddenException = require('../errors/forbiddenException');
 const pagination = require('../middleware/pagination');
+const { fromBuffer } = require('file-type');
 
 const router = express.Router();
 
@@ -95,20 +96,57 @@ router.get('/api/1.0/users/:id', async (req, res, next) => {
   }
 });
 
-router.put('/api/1.0/users/:id', async (req, res, next) => {
-  const authenticatedUser = req.authenticatedUser;
+router.put(
+  '/api/1.0/users/:id',
+  check('username')
+    .notEmpty()
+    .withMessage('USERNAME_NULL')
+    .bail()
+    .isLength({ min: 4, max: 32 })
+    .withMessage('USERNAME_LENGTH')
+    .bail(),
+  check('image').custom(async (fileInBase64) => {
+    if (!fileInBase64) {
+      return true;
+    }
+    const buffer = Buffer.from(fileInBase64, 'base64');
+    if (buffer.length > 1024 * 1024 * 2) {
+      throw new Error();
+    }
 
-  if (!authenticatedUser || authenticatedUser.id !== Number.parseInt(req.params.id)) {
-    return next(new ForbiddenException());
-  }
+    const type = await fromBuffer(buffer);
+    if (!type) {
+      throw new Error('UNSUPPORTED_FILE_TYPE');
+    }
+    const validType = ['image/jpeg', 'image/png'].includes(type.mime);
+    if (!validType) {
+      throw new Error('UNSUPPORTED_FILE_TYPE');
+    }
 
-  try {
-    await UserService.updateUser(req.params.id, req.body);
-    return res.send();
-  } catch (error) {
-    next(error);
+    return true;
+  }),
+  async (req, res, next) => {
+    const authenticatedUser = req.authenticatedUser;
+
+    if (!authenticatedUser || authenticatedUser.id !== Number.parseInt(req.params.id)) {
+      return next(new ForbiddenException());
+    }
+
+    const errors = validationResult(req);
+    if (!errors.isEmpty()) {
+      return next(new ValidationException(errors.array()));
+    }
+
+    try {
+      const user = await UserService.updateUser(req.params.id, req.body);
+      res.send(user);
+
+      res.status(400).send();
+    } catch (error) {
+      next(error);
+    }
   }
-});
+);
 
 router.delete('/api/1.0/users/:id', async (req, res, next) => {
   const authenticatedUser = req.authenticatedUser;

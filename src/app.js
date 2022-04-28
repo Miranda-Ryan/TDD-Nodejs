@@ -6,6 +6,12 @@ const userRouter = require('./router/user');
 const authRouter = require('./router/auth');
 const errorHandler = require('./errors/errorHandler');
 const tokenAuthentication = require('./middleware/tokenAuthentication');
+const FileService = require('./service/file');
+const config = require('config');
+const path = require('path');
+
+const { uploadDir, profileDir } = config;
+const profileFolder = path.join('.', uploadDir, profileDir);
 
 i18next
   .use(Backend)
@@ -23,10 +29,15 @@ i18next
     },
   });
 
+FileService.createFolders();
+
 const app = express();
 
 app.use(middleware.handle(i18next));
-app.use(express.json());
+app.use(express.json({ limit: '3mb' }));
+
+const oneYearInMilliSeconds = 365 * 24 * 60 * 60 * 1000;
+app.use('/images/', express.static(profileFolder, { maxAge: oneYearInMilliSeconds }));
 
 app.use(tokenAuthentication);
 

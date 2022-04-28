@@ -18,5 +18,6 @@
   "FORBIDDEN_ACCESS": "You are not authorized to perform this action",
   "EMAIL_NOT_FOUND": "Email not found",
   "PASSWORD_RESET_REQUEST_SUCCESS": "Check your email for steps on resetting your password",
-  "UNAUTHORIZED_PASSWORD_RESET": "You are not authorized to update this password"
+  "UNAUTHORIZED_PASSWORD_RESET": "You are not authorized to update this password",
+  "UNSUPPORTED_FILE_TYPE": "Invalid file type"
 }
