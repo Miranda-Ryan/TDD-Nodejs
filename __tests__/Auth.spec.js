@@ -76,12 +76,12 @@ describe('Authentication', () => {
     expect(response.status).toBe(200);
   });
 
-  it('returns only id, username and token when login is successful', async () => {
+  it('returns only id, username, token and profileImage when login is successful', async () => {
     const user = await addUser();
     const response = await login({ email: 'user1@xyz.com', password: 'test1234' });
 
     const responseUser = response.body;
-    expect(Object.keys(responseUser)).toEqual(['id', 'username', 'token']);
+    expect(Object.keys(responseUser)).toEqual(['id', 'username', 'token', 'profileImage']);
     expect(responseUser.id).toBe(user.id);
     expect(responseUser.username).toBe(user.username);
   });

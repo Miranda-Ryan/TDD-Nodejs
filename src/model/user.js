@@ -27,6 +27,9 @@ User.init(
     passwordResetToken: {
       type: Sequelize.STRING,
     },
+    profileImage: {
+      type: Sequelize.TEXT,
+    },
   },
   { sequelize, modelName: 'user' }
 );
